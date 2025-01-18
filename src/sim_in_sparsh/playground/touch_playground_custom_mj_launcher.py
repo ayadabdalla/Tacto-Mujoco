@@ -1,10 +1,12 @@
+import os
 import mujoco as mj
 import glfw
 import numpy as np
 import time
 
 # Path to your XML model
-MODEL_PATH = "/home/abdullah/utn/ontouch/robot-control-stack/python/examples/playground_data/touch_playground.xml"  # Update with your model path
+current_dir = os.path.dirname(os.path.abspath(__file__))
+MODEL_PATH = f"{current_dir}/playground_data/touch_playground.xml"  # Update with your model path
 
 # Joint control parameters
 CONTROL_INCREMENT = 0.05  # Amount to move joints per keypress

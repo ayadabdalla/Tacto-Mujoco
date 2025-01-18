@@ -1,6 +1,7 @@
+base_dir: ./
 hydra:
   run:
-    dir: ./
+    dir: "${base_dir}/"
 
 tacto:
   width: 120
@@ -8,7 +9,7 @@ tacto:
   visualize_gui: True
 
 digit:
-  urdf_path: "meshes/digit.urdf"
+  urdf_path: "${base_dir}/meshes/digit.urdf"
   base_position: [0, 0, 0]
 
   # quaternion from p.getQuaternionFromEuler([0, -pi/2, 0])
@@ -16,7 +17,7 @@ digit:
   use_fixed_base: True
 
 object:
-  urdf_path: "objects/sphere_small.urdf"
+  urdf_path: "${base_dir}/objects/sphere_small.urdf"
   base_position: [-0.015, 0, 0.04]
   global_scaling: 0.15
 

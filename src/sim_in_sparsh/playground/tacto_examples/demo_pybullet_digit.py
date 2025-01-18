@@ -4,19 +4,25 @@
 # LICENSE file in the root directory of this source tree.
 
 import logging
+import os
 
 import cv2
 import hydra
+from omegaconf import OmegaConf
 import pybullet as p
 import pybulletX as px
 import tacto  # Import TACTO
 
 log = logging.getLogger(__name__)
 
-
 # Load the config YAML file from examples/conf/digit.yaml
-@hydra.main(config_path="conf", config_name="digit")
+# OmegaConf.register_new_resolver("base_dir", script_dir)
+# @hydra.main(config_path="conf", config_name="digit")
+# script meta data, configuration and constants
+# remove leading slash from string
 def main(cfg):
+    # change base_dir using omegaconf library to override the default value
+
     # Initialize digits
     bg = cv2.imread("conf/bg_digit_240_320.jpg")
     digits = tacto.Sensor(**cfg.tacto, background=bg)
@@ -52,4 +58,7 @@ def main(cfg):
 
 
 if __name__ == "__main__":
-    main()
+    hydra.initialize("conf", version_base=None)
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    cfg=hydra.compose("digit.yaml", overrides=[f"base_dir={script_dir}"])
+    main(cfg)
