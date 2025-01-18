@@ -1,0 +1,19 @@
+# Python
+*.pyc
+*.pyo
+__pycache__/
+.siminsparsh/
+*.egg-info/
+.hydra/
+
+# C++
+*.o
+*.so
+build/
+
+# Misc
+.DS_Store
+*.log
+
+# vscode
+.vscode/
