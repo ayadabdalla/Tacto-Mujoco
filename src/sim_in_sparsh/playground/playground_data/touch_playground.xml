@@ -9,6 +9,8 @@
     <texture name="grid" type="2d" builtin="checker" rgb1=".1 .2 .3" rgb2=".2 .3 .4" width="300" height="300" mark="edge" markrgb=".2 .3 .4"/>
     <material name="grid" texture="grid" texrepeat="3 1" texuniform="true"/>
     <hfield file="a.png" size="0.2 0.2 0.02 0.015"/>
+    <!-- Define mesh for the URDF -->
+    <mesh name="digit_mesh" file="../tacto_examples/meshes/digit.STL" scale="1 1 1"/>
   </asset>
 
   <visual>
@@ -28,23 +30,42 @@
     <light pos="-1 0 .3" dir="1 0 -.3"/>
     <geom name="floor" pos="0 0 -0.01" type="plane" size="1 1 .01"/>
 
-    <geom name="a" type="hfield" hfield="a" rgba=".5 .5 .7 1"/>
+    <geom name="a" type="hfield" hfield="a" rgba=".5 .5 .7 0.2"/>
 
-    <body name="ball" pos="0 0 1">
+    <!-- Replace 'ball' with URDF 'baseLink' -->
+    <body name="baseLink" pos="0 0 1" quat="0.707 0 0.707 0">
+    <!-- <body name="baseLink" pos="0 0 1" quat="1 0 0 0"> -->
+
+      <!-- Inertial properties -->
+      <inertial pos="0 0 0" mass="0.1" diaginertia="1 1 1"/>
+
+      <!-- Visual geometry -->
+      <geom type="mesh" mesh="digit_mesh" rgba="1 1 1 0.2" contype="0" conaffinity="0"/>
+      <!-- Collision geometry -->
+      <geom type="mesh" mesh="digit_mesh" rgba="0 0 0 0"/>
+      <!-- <geom type="ellipsoid" size=".1 .1 .1" mass="0.1" rgba=".5 .5 .5 .3"/> -->
+
+
+
+      <!-- Sensor site for touch detection -->
+      <site name="touch" pos="0 0 0.015" quat="0.5 0.5 -0.5 -0.5"/>
+      <!-- <site name="touch" pos="0 0 0.1"/> -->
+
+      <!-- Joints -->
       <joint name="x" type="slide" axis="1 0 0" damping="1"/>
       <joint name="y" type="slide" axis="0 1 0" damping="1"/>
-      <joint name="z" type="slide" axis="0 0 1"/>
-      <joint name="rx" axis="1 0 0" springdamper="0.2 1"/>
-      <joint name="ry" axis="0 1 0" springdamper="0.2 1"/>
-      <geom type="ellipsoid" size=".3 .5 .1" mass="0.1" rgba=".5 .5 .5 .3"/>
-      <site name="touch" pos="0 0 .1"/>
+      <joint name="z" type="slide" axis="0 0 1" damping="1"/>
+      <joint name="rx" type="hinge" axis="1 0 0" damping="0.5" springref="0" stiffness="1"/>
+      <joint name="ry" type="hinge" axis="0 1 0" damping="0.5" springref="0" stiffness="1"/>
+      <joint name="rz" type="hinge" axis="0 0 1" damping="0.5" springref="0" stiffness="1"/>
+      <!-- <joint name="free_joint" type="free"/> -->
     </body>
   </worldbody>
 
   <sensor>
     <plugin name="touch" plugin="mujoco.sensor.touch_grid" objtype="site" objname="touch">
-      <config key="size" value="7 7"/>
-      <config key="fov" value="45 45"/>
+      <config key="size" value="120 160"/>
+      <config key="fov" value="60 70"/>
       <config key="gamma" value="0"/>
       <config key="nchannel" value="3"/>
     </plugin>

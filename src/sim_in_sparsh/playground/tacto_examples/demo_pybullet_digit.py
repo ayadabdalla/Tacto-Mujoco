@@ -5,12 +5,14 @@
 
 import logging
 import os
+import sys
 
 import cv2
 import hydra
 from omegaconf import OmegaConf
 import pybullet as p
 import pybulletX as px
+import mujoco as mj
 import tacto  # Import TACTO
 
 log = logging.getLogger(__name__)
@@ -28,27 +30,31 @@ def main(cfg):
     digits = tacto.Sensor(**cfg.tacto, background=bg)
 
     # Initialize World
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    model = mj.MjModel.from_xml_path(f"{current_dir}/../playground_data/touch_playground.xml")
+    data = mj.MjData(model)
     log.info("Initializing world")
     px.init()
 
-    p.resetDebugVisualizerCamera(**cfg.pybullet_camera)
+    # p.resetDebugVisualizerCamera(**cfg.pybullet_camera)
 
     # Create and initialize DIGIT
-    digit_body = px.Body(**cfg.digit)
-    digits.add_camera(digit_body.id, [-1])
-
+    # digit_body = px.Body(**cfg.digit)
+    # digits.add_camera(digit_body.id, [-1])
+    digits.add_camera(1, [-1])
+    # print(digit_body.id,"digit_body.id")
     # Add object to pybullet and tacto simulator
     obj = px.Body(**cfg.object)
-    digits.add_body(obj)
+    digits.add_body_mujoco(obj,model,data)
 
     # Create control panel to control the 6DoF pose of the object
-    panel = px.gui.PoseControlPanel(obj, **cfg.object_control_panel)
-    panel.start()
+    # panel = px.gui.PoseControlPanel(obj, **cfg.object_control_panel)
+    # panel.start()
     log.info("Use the slides to move the object until in contact with the DIGIT")
 
     # run p.stepSimulation in another thread
-    t = px.utils.SimulationThread(real_time_factor=1.0)
-    t.start()
+    # t = px.utils.SimulationThread(real_time_factor=1.0)
+    # t.start()
 
     while True:
         color, depth = digits.render()
