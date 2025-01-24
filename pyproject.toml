@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "SimInSparsh"
+version = "0.1.0"
+description = "Use digit tactile simulation with sparsh models"
+authors = [{ name = "Abdullah", email = "abdalla.ayad@utn.de" }]
+dependencies = []
+
+[tool.setuptools]
+packages = { find = { where = ["src"] } }
