@@ -8,6 +8,8 @@
         },
         {
             "path": "../tacto"
-        }
+        },
+        {  "python.defaultInterpreterPath": "~/utn/SiminSparsh/.siminsparsh/bin/python"}
+
     ]
 }

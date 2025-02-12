@@ -22,6 +22,7 @@ import threading
 
 CONTROL_INCREMENT = 0.0005  # Amount to move joints per keypress
 
+
 def key_callback(window, key, scancode, action, mods):
     """
     GLFW key callback to interactively control joint positions.
@@ -34,15 +35,30 @@ def key_callback(window, key, scancode, action, mods):
     elif key == glfw.KEY_PAGE_DOWN:
         data.qpos[model.joint("x").qposadr] -= CONTROL_INCREMENT
     elif key == glfw.KEY_RIGHT:
-        data.qpos[model.joint("z").qposadr] += CONTROL_INCREMENT
-    elif key == glfw.KEY_LEFT:
-        data.qpos[model.joint("z").qposadr] -= CONTROL_INCREMENT
-    elif key == glfw.KEY_UP:
-        data.qpos[model.joint("y").qposadr] += CONTROL_INCREMENT
-    elif key == glfw.KEY_DOWN:
         data.qpos[model.joint("y").qposadr] -= CONTROL_INCREMENT
+    elif key == glfw.KEY_LEFT:
+        data.qpos[model.joint("y").qposadr] += CONTROL_INCREMENT
+    elif key == glfw.KEY_UP:
+        data.qpos[model.joint("z").qposadr] += CONTROL_INCREMENT
+    elif key == glfw.KEY_DOWN:
+        data.qpos[model.joint("z").qposadr] -= CONTROL_INCREMENT
+    # add more keys to control joints of another object
+    elif key == glfw.KEY_W:
+        data.qpos[model.joint("can_x").qposadr] += CONTROL_INCREMENT
+    elif key == glfw.KEY_S:
+        data.qpos[model.joint("can_x").qposadr] -= CONTROL_INCREMENT
+    elif key == glfw.KEY_D:
+        data.qpos[model.joint("can_z").qposadr] += CONTROL_INCREMENT
+    elif key == glfw.KEY_A:
+        data.qpos[model.joint("can_z").qposadr] -= CONTROL_INCREMENT
+    elif key == glfw.KEY_R:
+        data.qpos[model.joint("can_y").qposadr] += CONTROL_INCREMENT
+    elif key == glfw.KEY_F:
+        data.qpos[model.joint("can_y").qposadr] -= CONTROL_INCREMENT
+
 
 log = logging.getLogger(__name__)
+
 
 # Load the config YAML file from examples/conf/digit.yaml
 # OmegaConf.register_new_resolver("base_dir", script_dir)
@@ -51,19 +67,26 @@ log = logging.getLogger(__name__)
 # remove leading slash from string
 def main(cfg):
     # change base_dir using omegaconf library to override the default value
+    # Initialize World
+    global model, data, camera, scene
+    import glfw
+
+
     # Initialize digits
     bg = cv2.imread("conf/bg_digit_240_320.jpg")
     digits = tacto.Sensor(**cfg.tacto, background=bg)
 
-    # Initialize World
-    global model, data,camera,scene
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    model = mj.MjModel.from_xml_path(f"{current_dir}/../playground_data/touch_playground.xml")
+    model = mj.MjModel.from_xml_path(
+        f"{current_dir}/../playground_data/touch_playground.xml"
+    )
     data = mj.MjData(model)
     model.opt.timestep = 0.001
 
-    log.info("Initializing world")
+    # log.info("Initializing world")
     # Create GLFW window
+    if not glfw.init():
+       raise Exception("Failed to initialize GLFW")
     window = glfw.create_window(1200, 800, "MuJoCo Interactive Viewer", None, None)
     if not window:
         glfw.terminate()
@@ -76,26 +99,20 @@ def main(cfg):
     context = mj.MjrContext(model, mj.mjtFontScale.mjFONTSCALE_150)
     camera = mj.MjvCamera()
 
-    # Create and initialize DIGIT
-    # Add object from mujoco to renderer
-    # digits.add_body_mujoco("digit",model,data) # get body in a smart way from mujoco
-    digits.add_body_mujoco("A",model,data) # get body in a smart way from mujoco
-    digits.add_camera_mujoco("touch",model,data) # get camera in a smart way from mujoco
+    # Add objects from mujoco to renderer
+    # digits.add_body_mujoco("digit",model,data) # Create and initialize DIGIT
+    mj.mj_step(model, data)
+    digits.add_body_mujoco("can", model, data)  # get body in a smart way from mujoco
+    digits.add_camera_mujoco(
+        "touch", model, data
+    )  # get camera in a smart way from mujoco
 
-    # Create control panel to control the 6DoF pose of the object
-    # panel = px.gui.PoseControlPanel(obj, **cfg.object_control_panel)
-    # panel.start()
-    log.info("Use the slides to move the object until in contact with the DIGIT")
-
-    # run p.stepSimulation in another thread
-    # t = px.utils.SimulationThread(real_time_factor=1.0)
-    # t.start()
     # Render the DIGIT sensor in a separate thread
     def render_digit():
         while not glfw.window_should_close(window):
             color, depth = digits.render(model, data)
-            # digits.updateGUI(color, depth)
-            time.sleep(0.01)  # Adjust the sleep time as needed
+            digits.updateGUI(color, depth)
+            time.sleep(0.01)
     render_thread = threading.Thread(target=render_digit)
     render_thread.start()
 
@@ -114,11 +131,8 @@ def main(cfg):
         glfw.poll_events()
 
 
-
-
-
 if __name__ == "__main__":
     hydra.initialize("conf", version_base=None)
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    cfg=hydra.compose("digit.yaml", overrides=[f"base_dir={script_dir}"])
+    cfg = hydra.compose("digit.yaml", overrides=[f"base_dir={script_dir}"])
     main(cfg)
