@@ -4,16 +4,13 @@
   <extension>
     <plugin plugin="mujoco.sensor.touch_grid" />
   </extension>
-  <!-- <size nconmax="1000000" /> -->
   <asset>
     <texture name="grid" type="2d" builtin="checker" rgb1=".1 .2 .3" rgb2=".2 .3 .4"
       width="300"
       height="300" mark="edge" markrgb=".2 .3 .4" />
     <material name="grid" texture="grid" texrepeat="3 1" texuniform="true" />
     <mesh name="digit_mesh" file="../tacto_examples/meshes/digit.STL" scale="1 1 1" />
-    <mesh name="can_mesh" file="uv-sphere.obj" scale="0.0009 0.0009 0.0009" />
-    <!-- <mesh name="can_mesh" file="textured.obj"/> -->
-    <!-- <hfield file="a.png" size="0.015 0.015 0.007 0.005" /> -->
+    <mesh name="sphere_mesh" file="uv-sphere.obj" scale="0.001 0.001 0.001" />
   </asset>
 
   <option tolerance="1e-8" gravity="0 0 -9.81" timestep="0.002"/>
@@ -26,7 +23,7 @@
   </visual>
 
   <default>
-    <geom friction="0.4" solimp="0.99 0.9999 0.000001" />
+    <geom friction="1" solimp="0.9 0.9999 0.0001" />
   </default>
 
   <statistic center="0 0 1" extent="1" meansize="0.1" />
@@ -36,58 +33,23 @@
     <light pos="-1 0 .3" dir="1 0 -.3" />
     <geom name="floor" pos="0 0 0.01" type="plane" size="1 1 .01"/>
 
-    <!-- objects that we intend to touch with digit -->
-    <body name="can" pos="0 0 0.01">
-      <geom type="mesh" mesh="can_mesh" rgba=".5 0 .7 0.5" contype="2" conaffinity="1" />
-      <!-- <geom name="a" type="hfield" hfield="a" rgba=".5 .5 .7 0.2" contype="2" conaffinity="1"
-        material="grid" pos="0 0 0" friction="1 0.005 0.0001"/> -->
-      <inertial pos="0 0 0" mass="1" diaginertia="1 1 1" />
-      <joint name="zz" type="slide" axis="1 0 0" damping="0.1"/>
-      <joint name="yy" type="slide" axis="0 1 0" damping="0.1" />
-      <joint name="xx" type="slide" axis="0 0 1" damping="0.1" />
-    </body>
-    <!-- <body name="cylinder_one" pos="0.2 0.2 0">
-      <geom type="cylinder" size="0.1 0.01" rgba="0.8 0.2 0.2 0.1" contype="2" conaffinity="1"
-        material="grid" />
+    <body name="sphere" pos="0 0 0.05">
+      <geom name="sphere" type="mesh" mesh="sphere_mesh" rgba=".5 0 .7 1" contype="2" conaffinity="1" />
       <inertial pos="0 0 0" mass="0.1" diaginertia="1 1 1" />
-      <joint name="cylinder_joint_one" type="hinge" axis="0 0 1" damping="0.1" />
+      <joint name="sphere_z" type="slide" axis="1 0 0" damping="0.1"/>
+      <joint name="sphere_y" type="slide" axis="0 1 0" damping="0.1"/>
+      <joint name="sphere_x" type="slide" axis="0 0 1" damping="0.1"/>
     </body>
-    <body name="cylinder_two" pos="0.3 0.3 0">
-      <geom type="cylinder" size="0.1 0.01" rgba="0.2 0.8 0.2 0.1" contype="2" conaffinity="1"
-        material="grid"/>
-      <geom type="box" size="0.05 0.1 0.01" pos="-0.05 0 0" rgba="0.2 0.8 0.2 0.1" />
-      <geom type="box" size="0.05 0.1 0.01" pos="0.05 0 0" rgba="0.8 0.2 0.2 0.1"/>
-      <inertial pos="0 0 0" mass="0.1" diaginertia="1 1 1" />
-      <joint name="cylinder_joint_two" type="hinge" axis="0 0 1" damping="0.1" />
-    </body> -->
-    <!-- <body name="rectangle" pos="0.2 0.2 0.1" quat="0.707 0 0.707 0">
+    <body name="digit" pos="0 -0.02 0.03" quat="0.5 -0.5 -0.5 -0.5">
       <inertial pos="0 0 0" mass="1" diaginertia="1 1 1" />
-      <geom type="box" size="0.01 0.05 0.05" rgba="0 0 0 0.2" contype="1" conaffinity="2" />
-      <site name="touch" pos="-0.1 0 0" quat="0.5 0.5 -0.5 -0.5" />
-      <joint name="x" type="slide" axis="1 0 0" damping="0.1" />
-      <joint name="y" type="slide" axis="0 1 0" damping="0.1" />
-      <joint name="z" type="slide" axis="0 0 1" damping="0.1" />
-    </body> -->
-
-    <body name="digit" pos="0 -0.01 0.03" quat="0.5 -0.5 0.5 0.5">
-      <inertial pos="0 0 0" mass="10" diaginertia="1 1 1" />
       <geom type="mesh" mesh="digit_mesh" rgba="0 0 0 0.2" contype="1" conaffinity="3"/>
       <site name="touch" pos="0 0 0.015" quat="-0.5 -0.5 0.5 0.5" />
-      <!-- <joint name="rx" type="hinge" axis="1 0 0" springdamper="0.2 1"/> -->
-      <!-- <joint name="ry" type="hinge" axis="0 1 0" springdamper="0.2 1"/> -->
-      <!-- <joint name="rz" type="hinge" axis="0 0 1" damping="0.1" /> -->
       <joint name="x" type="slide" axis="1 0 0" damping="0.1" />
       <joint name="y" type="slide" axis="0 1 0" damping="0.1" />
       <joint name="z" type="slide" axis="0 0 1" damping="0.1" />
-      <!-- <joint name="free_joint" type="free" /> -->
     </body>
 
   </worldbody>
-  <!-- <actuator>
-    <position joint="x" kv="100" kp="1000"/> -->
-  <!-- <position joint="y" kv="100" kp="100" />
-    <position joint="z" kv="100" kp="100" /> -->
-  <!-- </actuator> -->
   <sensor>
     <plugin name="touch" plugin="mujoco.sensor.touch_grid" objtype="site" objname="touch">
       <config key="size" value="120 160" />
