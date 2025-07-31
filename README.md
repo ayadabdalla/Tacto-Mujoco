@@ -1,3 +1,7 @@
+## Demo
+
+![Demo](docs/Mujoco_tacto.gif)
+
 ## Installation Instructions
 
 Follow the steps below to set up the environment and install the required dependencies:
@@ -42,3 +46,4 @@ To run the demo script and interact with the simulation:
     ```bash
     python src/tacto_mujoco/scripts/touch_playground_mujoco_launcher.py
     ```
+
