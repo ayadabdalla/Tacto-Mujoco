@@ -1,0 +1,61 @@
+<mujoco model="touchtest">
+  <compiler autolimits="true" eulerseq="xyz" />
+
+  <extension>
+    <plugin plugin="mujoco.sensor.touch_grid" />
+  </extension>
+  <asset>
+    <texture name="grid" type="2d" builtin="checker" rgb1=".1 .2 .3" rgb2=".2 .3 .4"
+      width="300"
+      height="300" mark="edge" markrgb=".2 .3 .4" />
+    <material name="grid" texture="grid" texrepeat="3 1" texuniform="true" />
+    <mesh name="digit_mesh" file="../tacto_examples/meshes/digit.STL" scale="1 1 1" />
+    <mesh name="sphere_mesh" file="uv-sphere.obj" scale="0.001 0.001 0.001" />
+  </asset>
+
+  <option tolerance="1e-8" gravity="0 0 -9.81" timestep="0.002"/>
+
+  <visual>
+    <headlight ambient=".7 .7 .7" diffuse=".2 .2 .2" specular="0.1 0.1 0.1" />
+    <map znear="0.001" />
+    <scale contactwidth=".02" contactheight=".5" />
+    <global fovy="4"/>
+  </visual>
+
+  <default>
+    <geom friction="1" solimp="0.9 0.9999 0.0001" />
+  </default>
+
+  <statistic center="0 0 1" extent="1" meansize="0.1" />
+
+  <worldbody>
+    <light pos="1 0 .3" dir="-1 0 -.3" />
+    <light pos="-1 0 .3" dir="1 0 -.3" />
+    <geom name="floor" pos="0 0 0.01" type="plane" size="1 1 .01"/>
+
+    <body name="sphere" pos="0 0 0.05">
+      <geom name="sphere" type="mesh" mesh="sphere_mesh" rgba=".5 0 .7 1" contype="2" conaffinity="1" />
+      <inertial pos="0 0 0" mass="0.1" diaginertia="1 1 1" />
+      <joint name="sphere_z" type="slide" axis="1 0 0" damping="0.1"/>
+      <joint name="sphere_y" type="slide" axis="0 1 0" damping="0.1"/>
+      <joint name="sphere_x" type="slide" axis="0 0 1" damping="0.1"/>
+    </body>
+    <body name="digit" pos="0 -0.02 0.03" quat="0.5 -0.5 -0.5 -0.5">
+      <inertial pos="0 0 0" mass="1" diaginertia="1 1 1" />
+      <geom type="mesh" mesh="digit_mesh" rgba="0 0 0 0.2" contype="1" conaffinity="3"/>
+      <site name="touch" pos="0 0 0.015" quat="-0.5 -0.5 0.5 0.5" />
+      <joint name="x" type="slide" axis="1 0 0" damping="0.1" />
+      <joint name="y" type="slide" axis="0 1 0" damping="0.1" />
+      <joint name="z" type="slide" axis="0 0 1" damping="0.1" />
+    </body>
+
+  </worldbody>
+  <sensor>
+    <plugin name="touch" plugin="mujoco.sensor.touch_grid" objtype="site" objname="touch">
+      <config key="size" value="120 160" />
+      <config key="fov" value="60 70" />
+      <config key="gamma" value="0" />
+      <config key="nchannel" value="3" />
+    </plugin>
+  </sensor>
+</mujoco>

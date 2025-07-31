@@ -23,7 +23,7 @@ MarkupSafe==3.0.2
 matplotlib==3.10.0
 mpmath==1.3.0
 mujoco==3.2.7
-networkx==2.2
+networkx==3.5
 numpy==2.2.1
 nvidia-cublas-cu12==12.4.5.8
 nvidia-cuda-cupti-cu12==12.4.127
@@ -52,14 +52,12 @@ python-dateutil==2.9.0.post0
 PyYAML==6.0.2
 scipy==1.15.1
 setuptools==75.8.0
-# Editable Git install with no remote (SimInSparsh==0.1.0)
-# -e {repository_directory}/SimInSparsh
 six==1.17.0
 sympy==1.13.1
-tacto==0.0.3
+# tacto @ git+https://github.com/ayadabdalla/tacto.git@18252b8cc86f2b12efc2a5a3ff3cac4e08308546
 torch==2.5.1
 trimesh==4.5.3
 triton==3.1.0
 typing_extensions==4.12.2
-urdfpy==0.0.22
+# urdfpy==0.0.22
 zipp==3.21.0

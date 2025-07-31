@@ -3,9 +3,9 @@ requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "SimInSparsh"
+name = "tacto_mujoco"
 version = "0.1.0"
-description = "Use digit tactile simulation with sparsh models"
+description = "Integration of Tacto Digit sensor simulation in Mujoco"
 authors = [{ name = "Abdullah", email = "abdalla.ayad@utn.de" }]
 dependencies = []
 
